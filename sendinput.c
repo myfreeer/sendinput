@@ -92,39 +92,41 @@ unsigned long crc32(const char * buf, unsigned long size) {
   return crc ^ 0xFFFFFFFF;
 }
 
-static UINT MouseClick(const unsigned int x, const unsigned int y, const unsigned char type) {
+static void MouseClick(const unsigned int x, const unsigned int y, const unsigned char type) {
   SetCursorPos(x, y);
-  INPUT input[2];
-  input[0].type = input[1].type = INPUT_MOUSE;
+  INPUT input;
+  input.type = INPUT_MOUSE;
   switch (type) {
   case 1:
-    input[0].mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-    input[1].mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+    input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+    SendInput(1, &input, sizeof(input));
+    input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
     break;
   case 2:
-    input[0].mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
-    input[1].mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+    input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+    SendInput(1, &input, sizeof(input));
+    input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
   default:
-    input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-    input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+    SendInput(1, &input, sizeof(input));
+    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
   }
-  return SendInput(2, input, sizeof(INPUT));
+  SendInput(1, &input, sizeof(input));
 }
 
 static void SetKeyState(const BOOL bState, const WORD keyCode) {
   BYTE keyState[256];
-  INPUT input[2];
+  INPUT input;
 
   GetKeyboardState((LPBYTE) &keyState);
   if ((bState && !(keyState[keyCode] & 1)) ||
     (!bState && (keyState[keyCode] & 1))) {
-    ZeroMemory(input, sizeof(input));
-    input[0].type = input[1].type = INPUT_KEYBOARD;
-    input[0].ki.wVk = input[1].ki.wVk = keyCode;
-    input[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    input.type = INPUT_KEYBOARD;
+    input.ki.wVk = keyCode;
+    SendInput(1, &input, sizeof(input));
 
-    // Simulate a key input
-    SendInput(2, input, sizeof(INPUT));
+    input.ki.dwFlags = KEYEVENTF_KEYUP;
+    SendInput(1, &input, sizeof(input));
   }
 }
 
@@ -482,14 +484,18 @@ LPSTR ParseKeyString(const LPSTR keyString) {
       if (keyString[offset - 1] == '}') {
         BOOL commandMatched = FALSE;
         switch (crc32(commandBuffer, strnlen(commandBuffer, COMMAND_MAX_LENGTH))) {
+        case 1302462608L: //CLICK
+        case 1121492025L: //LCLICK
         case 2224477467L: //LEFTCLICK
           MouseClick(param1, param2, 0);
           commandMatched = TRUE;
           break;
+        case 2063925202L: //RCLICK
         case 1685702361L: //RIGHTCLICK
           MouseClick(param1, param2, 1);
           commandMatched = TRUE;
           break;
+        case 2307149724L: //MCLICK
         case 1843602477L: //MIDDLECLICK
           MouseClick(param1, param2, 2);
           commandMatched = TRUE;
