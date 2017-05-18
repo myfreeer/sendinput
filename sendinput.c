@@ -195,6 +195,7 @@ static BOOL ParseCommand(char * commandBuffer) {
   case 550391901L: //PAUSE
     SendSingleKey(VK_PAUSE);
     return TRUE;
+  case 2439287330L: //CAPS
   case 3274666208L: //CAPSLOCK
     SendSingleKey(VK_CAPITAL);
     return TRUE;
@@ -255,6 +256,7 @@ static BOOL ParseCommand(char * commandBuffer) {
   case 1041412376L: //HELP
     SendSingleKey(VK_HELP);
     return TRUE;
+  case 1256517092L: //NUM
   case 3844504896L: //NUMLOCK
     SendSingleKey(VK_NUMLOCK);
     return TRUE;
@@ -457,13 +459,15 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         BOOL commandMatched = FALSE;
         switch (crc32(commandBuffer, strnlen(commandBuffer, COMMAND_MAX_LENGTH))) {
         case 4167499804L: //SLEEP
-          WaitForSingleObject(GetCurrentThread(), param1);
+          Sleep(param1);
           commandMatched = TRUE;
           break;
+        case 2439287330L: //CAPS
         case 3274666208L: //CAPSLOCK
           SetKeyState((BOOL) param1, VK_CAPITAL);
           commandMatched = TRUE;
           break;
+        case 1256517092L: //NUM
         case 3844504896L: //NUMLOCK
           SetKeyState((BOOL) param1, VK_NUMLOCK);
           commandMatched = TRUE;
