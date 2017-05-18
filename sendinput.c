@@ -291,6 +291,46 @@ static BOOL ParseCommand(char * commandBuffer) {
   case 1936067278L: //DIVIDE
     SendSingleKey(VK_DIVIDE);
     return TRUE;
+  case 1408638381L: //NUM0
+  case 2111931934L: //NUMPAD0
+    SendSingleKey(VK_NUMPAD0);
+    return TRUE;
+  case 619785531L: //NUM1
+  case 182892168L: //NUMPAD1
+    SendSingleKey(VK_NUMPAD1);
+    return TRUE;
+  case 3187178625L: //NUM2
+  case 2481973042L: //NUMPAD2
+    SendSingleKey(VK_NUMPAD2);
+    return TRUE;
+  case 3405728791L: //NUM3
+  case 3840464804L: //NUMPAD3
+    SendSingleKey(VK_NUMPAD3);
+    return TRUE;
+  case 1419499956L: //NUM4
+  case 2056012295L: //NUMPAD4
+    SendSingleKey(VK_NUMPAD4);
+    return TRUE;
+  case 597485858L: //NUM5
+  case 227242641L: //NUMPAD5
+    SendSingleKey(VK_NUMPAD5);
+    return TRUE;
+  case 3130374296L: //NUM6
+  case 2491556651L: //NUMPAD6
+    SendSingleKey(VK_NUMPAD6);
+    return TRUE;
+  case 3448932366L: //NUM7
+  case 3817149373L: //NUMPAD7
+    SendSingleKey(VK_NUMPAD7);
+    return TRUE;
+  case 1563268511L: //NUM8
+  case 1933184556L: //NUMPAD8
+    SendSingleKey(VK_NUMPAD8);
+    return TRUE;
+  case 707437833L: //NUM9
+  case 71122618L: //NUMPAD9
+    SendSingleKey(VK_NUMPAD9);
+    return TRUE;
   case 3055876678L: //F1
     SendSingleKey(VK_F1);
     return TRUE;
