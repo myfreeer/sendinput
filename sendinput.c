@@ -3,16 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void EmitError(const unsigned short errorCode) {
-  // 0: no error
-  // 1: keyCodeCombine == -1, VkKeyScan fails
-  // 2: unknown high-order byte of VkKeyScan's return value
-  LPSTR ErrorInfo[4];
-  ErrorInfo[0] = "no error";
-  ErrorInfo[1] = "keyCodeCombine == -1, VkKeyScan fails";
-  ErrorInfo[2] = "unknown high-order byte of VkKeyScan's return value";
-  ErrorInfo[3] = "cannot get keyCode2";
+#define COMMAND_MAX_LENGTH 32
+#define PARAM_MAX_LENGTH 12
 
+static const LPSTR ErrorInfo[] = {
+  "no error"
+  ,"keyCodeCombine == -1, VkKeyScan fails"
+  ,"unknown high-order byte of VkKeyScan's return value"
+  ,"cannot get keyCode2"
+};
+
+static void EmitError(const unsigned short errorCode) {
   MessageBox(NULL, ErrorInfo[errorCode], NULL, MB_OK | MB_ICONINFORMATION);
 }
 
@@ -83,13 +84,12 @@ static const unsigned long crc32tab[] = {
  0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL, 0x2d02ef8dL 
 };
 
-unsigned long crc32(const char *buf, unsigned long size)
-{
-     unsigned long i, crc;
-     crc = 0xFFFFFFFF;
-     for (i = 0; i < size; i++)
-      crc = crc32tab[(crc ^ buf[i]) & 0xff] ^ (crc >> 8);
-     return crc^0xFFFFFFFF;
+unsigned long crc32(const char * buf, unsigned long size) {
+  unsigned long i, crc;
+  crc = 0xFFFFFFFF;
+  for (i = 0; i < size; i++)
+    crc = crc32tab[(crc ^ buf[i]) & 0xff] ^ (crc >> 8);
+  return crc ^ 0xFFFFFFFF;
 }
 
 static UINT MouseClick(const unsigned int x, const unsigned int y, const unsigned char type) {
@@ -161,7 +161,7 @@ LPSTR ParseKeyString(const LPSTR keyString);
 static BOOL ParseCommand(char* commandBuffer);
 
 static BOOL ParseCommand(char * commandBuffer) {
-  const unsigned long length = strnlen(commandBuffer, 32);
+  const unsigned long length = strnlen(commandBuffer, COMMAND_MAX_LENGTH);
   const unsigned long hash = crc32(commandBuffer, length);
   switch (hash) {
   case 1005452284L: //DOLLAR
@@ -397,23 +397,23 @@ static BOOL ParseCommand(char * commandBuffer) {
 LPSTR ParseKeyString(const LPSTR keyString) {
   if (lstrlen(keyString) < 1) return 0;
   if (keyString[0] == '$' && keyString[1] == '{') {
-    char commandBuffer[32];
-    char param1Buffer[11];
-    char param2Buffer[11];
+    char commandBuffer[COMMAND_MAX_LENGTH];
+    char param1Buffer[PARAM_MAX_LENGTH];
+    char param2Buffer[PARAM_MAX_LENGTH];
     int param1, param2;
     if (sscanf(keyString, "${%[A-Z0-9]}", commandBuffer) == 1) {
-      size_t offset = 2 + strnlen(commandBuffer, 32) + 1;
+      size_t offset = 2 + strnlen(commandBuffer, COMMAND_MAX_LENGTH) + 1;
       if (keyString[offset - 1] == '}') {
         if (ParseCommand(commandBuffer))
           return ParseKeyString(keyString + offset);
       }
     }
     if (sscanf(keyString, "${%[A-Z] %[0-9]}", commandBuffer, param1Buffer) == 2) {
-      size_t offset = 3 + strnlen(commandBuffer, 32) + strnlen(param1Buffer, 11) + 1;
+      size_t offset = 3 + strnlen(commandBuffer, COMMAND_MAX_LENGTH) + strnlen(param1Buffer, PARAM_MAX_LENGTH) + 1;
       param1 = atoi(param1Buffer);
       if (keyString[offset - 1] == '}') {
         BOOL commandMatched = FALSE;
-        switch (crc32(commandBuffer, strnlen(commandBuffer, 32))) {
+        switch (crc32(commandBuffer, strnlen(commandBuffer, COMMAND_MAX_LENGTH))) {
         case 4167499804L: //SLEEP
           WaitForSingleObject(GetCurrentThread(), param1);
           commandMatched = TRUE;
@@ -436,12 +436,12 @@ LPSTR ParseKeyString(const LPSTR keyString) {
       }
     }
     if (sscanf(keyString, "${%[A-Z] %[0-9] %[0-9]}", commandBuffer, param1Buffer, param2Buffer) == 3) {
-      size_t offset = 4 + strnlen(commandBuffer, 32) + strnlen(param1Buffer, 11) + strnlen(param2Buffer, 11) + 1;
+      size_t offset = 4 + strnlen(commandBuffer, COMMAND_MAX_LENGTH) + strnlen(param1Buffer, PARAM_MAX_LENGTH) + strnlen(param2Buffer, PARAM_MAX_LENGTH) + 1;
       param1 = atoi(param1Buffer);
       param2 = atoi(param2Buffer);
       if (keyString[offset - 1] == '}') {
         BOOL commandMatched = FALSE;
-        switch (crc32(commandBuffer, strnlen(commandBuffer, 32))) {
+        switch (crc32(commandBuffer, strnlen(commandBuffer, COMMAND_MAX_LENGTH))) {
         case 2224477467L: //LEFTCLICK
           MouseClick(param1, param2, 0);
           commandMatched = TRUE;
@@ -483,7 +483,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
     keyCode2Initialized = TRUE;
     break;
   case 2:
-    keyCode2 = VK_CONTROL; //control
+    keyCode2 = VK_CONTROL; //ctrl
     keyCode2Initialized = TRUE;
     break;
   case 4:
@@ -498,8 +498,8 @@ LPSTR ParseKeyString(const LPSTR keyString) {
   if (keyCode2Initialized)
     SendDoubleKey(keyCode2, keyCode);
   else {
-    SendSingleKey(keyCode);
     EmitError(3); //cannot get keyCode2
+    SendSingleKey(keyCode);
   }
   return ParseKeyString(keyString + 1);
 }
