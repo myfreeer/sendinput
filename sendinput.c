@@ -95,6 +95,165 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         if (strcmp(commandBuffer, "DOLLAR") == 0) {
           ParseKeyString("$");
           commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "BACKSPACE") == 0 || strcmp(commandBuffer, "BS") == 0 || strcmp(commandBuffer, "BKSP") == 0) {
+          SendSingleKey(VK_BACK);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "TAB") == 0) {
+          SendSingleKey(VK_TAB);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "CLEAR") == 0) {
+          SendSingleKey(VK_CLEAR);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "ENTER") == 0) {
+          SendSingleKey(VK_RETURN);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "SHIFT") == 0) {
+          SendSingleKey(VK_SHIFT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "CTRL") == 0) {
+          SendSingleKey(VK_CONTROL);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "BACKSPACE") == 0) {
+          SendSingleKey(VK_BACK);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "ALT") == 0) {
+          SendSingleKey(VK_MENU);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "PAUSE") == 0) {
+          SendSingleKey(VK_PAUSE);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "CAPSLOCK") == 0) {
+          SendSingleKey(VK_CAPITAL);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "ESC") == 0) {
+          SendSingleKey(VK_ESCAPE);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "PAGEUP") == 0 || strcmp(commandBuffer, "PGUP") == 0) {
+          SendSingleKey(VK_PRIOR);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "PAGEDOWN") == 0 || strcmp(commandBuffer, "PGDN") == 0 ) {
+          SendSingleKey(VK_NEXT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "END") == 0) {
+          SendSingleKey(VK_END);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "HOME") == 0) {
+          SendSingleKey(VK_HOME);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "LEFTARROW") == 0||strcmp(commandBuffer, "LEFT") == 0) {
+          SendSingleKey(VK_LEFT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "UPARROW") == 0||strcmp(commandBuffer, "UP") == 0) {
+          SendSingleKey(VK_UP);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "RIGHTARROW") == 0||strcmp(commandBuffer, "RIGHT") == 0) {
+          SendSingleKey(VK_RIGHT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "DOWNARROW") == 0||strcmp(commandBuffer, "DOWN") == 0) {
+          SendSingleKey(VK_DOWN);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "SELECT") == 0) {
+          SendSingleKey(VK_SELECT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "PRINT") == 0) {
+          SendSingleKey(VK_PRINT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "EXECUTE") == 0) {
+          SendSingleKey(VK_EXECUTE);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "PRINTSCREEN") == 0||strcmp(commandBuffer, "PRTSC") == 0) {
+          SendSingleKey(VK_SNAPSHOT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "INS") == 0||strcmp(commandBuffer, "INSERT") == 0) {
+          SendSingleKey(VK_INSERT);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "DEL") == 0||strcmp(commandBuffer, "DELETE") == 0) {
+          SendSingleKey(VK_DELETE);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "HELP") == 0) {
+          SendSingleKey(VK_HELP);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "NUMLOCK") == 0) {
+          SendSingleKey(VK_NUMLOCK);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "SCROLLLOCK") == 0) {
+          SendSingleKey(VK_SCROLL);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F1") == 0) {
+          SendSingleKey(VK_F1);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F2") == 0) {
+          SendSingleKey(VK_F2);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F3") == 0) {
+          SendSingleKey(VK_F3);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F4") == 0) {
+          SendSingleKey(VK_F4);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F5") == 0) {
+          SendSingleKey(VK_F5);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F6") == 0) {
+          SendSingleKey(VK_F6);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F7") == 0) {
+          SendSingleKey(VK_F7);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F8") == 0) {
+          SendSingleKey(VK_F8);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F9") == 0) {
+          SendSingleKey(VK_F9);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F10") == 0) {
+          SendSingleKey(VK_F10);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F11") == 0) {
+          SendSingleKey(VK_F11);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F12") == 0) {
+          SendSingleKey(VK_F12);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F13") == 0) {
+          SendSingleKey(VK_F13);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F14") == 0) {
+          SendSingleKey(VK_F14);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F15") == 0) {
+          SendSingleKey(VK_F15);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F16") == 0) {
+          SendSingleKey(VK_F16);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F17") == 0) {
+          SendSingleKey(VK_F17);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F18") == 0) {
+          SendSingleKey(VK_F18);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F19") == 0) {
+          SendSingleKey(VK_F19);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F20") == 0) {
+          SendSingleKey(VK_F20);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F21") == 0) {
+          SendSingleKey(VK_F21);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F22") == 0) {
+          SendSingleKey(VK_F22);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F23") == 0) {
+          SendSingleKey(VK_F23);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "F24") == 0) {
+          SendSingleKey(VK_F24);
+          commandMatched = TRUE;
+        } else if (strcmp(commandBuffer, "IMEPROCESS") == 0) {
+          SendSingleKey(VK_PROCESSKEY);
+          commandMatched = TRUE;
         }
         
         if (commandMatched)
