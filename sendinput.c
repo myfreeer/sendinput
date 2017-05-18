@@ -14,7 +14,7 @@ static const LPSTR ErrorInfo[] = {
 };
 
 static void EmitError(const unsigned short errorCode) {
-  MessageBox(NULL, ErrorInfo[errorCode], NULL, MB_OK | MB_ICONINFORMATION);
+  MessageBox(NULL, ErrorInfo[errorCode], NULL, MB_OK | MB_ICONEXCLAMATION | MB_SETFOREGROUND);
 }
 
 static const unsigned long crc32tab[] = {
