@@ -4,7 +4,7 @@ static WORD ParseCommand(const unsigned long hash) {
   case 1911832374L: //BS
   case 2523624168L: //BKSP
     return VK_BACK;
-  case 3727033226: //SPACE
+  case 3727033226L: //SPACE
     return VK_SPACE;
   case 3846439302L: //TAB
     return VK_TAB;

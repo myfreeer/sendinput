@@ -29,45 +29,18 @@ static void SendSingleKey(const WORD keyCode) {
   SendInput(1, &input, sizeof(input));
 }
 
-//function SendDoubleKey: press keyCode1, press keyCode2, release keyCode1, release keyCode2
-static void SendDoubleKey(const WORD keyCode1, const WORD keyCode2) {
+static void SendMultipleKey(const WORD keyCode[], const unsigned short count) {
   INPUT input;
   ZeroMemory(&input, sizeof(input));
   input.type = INPUT_KEYBOARD;
-  input.ki.wVk = keyCode1;
   input.ki.dwFlags = 0;
-  SendInput(1, &input, sizeof(input));
-
-  input.ki.wVk = keyCode2;
-  SendInput(1, &input, sizeof(input));
-
+  for (unsigned short i = 0; i<count;i++) {
+  	  input.ki.wVk = keyCode[i];
+  	  SendInput(1, &input, sizeof(input));
+  }
   input.ki.dwFlags = KEYEVENTF_KEYUP;
-  SendInput(1, &input, sizeof(input));
-
-  input.ki.wVk = keyCode1;
-  SendInput(1, &input, sizeof(input));
-}
-
-static void SendTripleKey(const WORD keyCode1, const WORD keyCode2, const WORD keyCode3) {
-  INPUT input;
-  ZeroMemory(&input, sizeof(input));
-  input.type = INPUT_KEYBOARD;
-  input.ki.wVk = keyCode1;
-  input.ki.dwFlags = 0;
-  SendInput(1, &input, sizeof(input));
-
-  input.ki.wVk = keyCode2;
-  SendInput(1, &input, sizeof(input));
-
-  input.ki.wVk = keyCode3;
-  SendInput(1, &input, sizeof(input));
-
-  input.ki.dwFlags = KEYEVENTF_KEYUP;
-  SendInput(1, &input, sizeof(input));
-
-  input.ki.wVk = keyCode2;
-  SendInput(1, &input, sizeof(input));
-
-  input.ki.wVk = keyCode1;
-  SendInput(1, &input, sizeof(input));
+  for (unsigned short i = count; i-->0;) {
+  	  input.ki.wVk = keyCode[i];
+  	  SendInput(1, &input, sizeof(input));
+  }
 }
