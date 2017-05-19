@@ -47,3 +47,27 @@ static void SendDoubleKey(const WORD keyCode1, const WORD keyCode2) {
   input.ki.wVk = keyCode1;
   SendInput(1, &input, sizeof(input));
 }
+
+static void SendTripleKey(const WORD keyCode1, const WORD keyCode2, const WORD keyCode3) {
+  INPUT input;
+  ZeroMemory(&input, sizeof(input));
+  input.type = INPUT_KEYBOARD;
+  input.ki.wVk = keyCode1;
+  input.ki.dwFlags = 0;
+  SendInput(1, &input, sizeof(input));
+
+  input.ki.wVk = keyCode2;
+  SendInput(1, &input, sizeof(input));
+
+  input.ki.wVk = keyCode3;
+  SendInput(1, &input, sizeof(input));
+
+  input.ki.dwFlags = KEYEVENTF_KEYUP;
+  SendInput(1, &input, sizeof(input));
+
+  input.ki.wVk = keyCode2;
+  SendInput(1, &input, sizeof(input));
+
+  input.ki.wVk = keyCode1;
+  SendInput(1, &input, sizeof(input));
+}

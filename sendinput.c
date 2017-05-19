@@ -73,7 +73,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
           return ParseKeyString(keyString + offset);
       }
     }
-    if (sscanf(keyString, "${%[A-Z] %[0-9A-Za-z]}", commandBuffer, param1Buffer) == 2) {
+    if (sscanf(keyString, "${%[A-Z]+%[0-9A-Za-z]}", commandBuffer, param1Buffer) == 2) {
       size_t offset = 4 + strnlen(commandBuffer, COMMAND_MAX_LENGTH) + strnlen(param1Buffer, PARAM_MAX_LENGTH);
       if (keyString[offset - 1] == '}') {
         const WORD commandLength = strnlen(commandBuffer, COMMAND_MAX_LENGTH);
@@ -136,7 +136,49 @@ LPSTR ParseKeyString(const LPSTR keyString) {
           return ParseKeyString(keyString + offset);
       }
     }
+    if (sscanf(keyString, "${%[A-Z]+%[A-Z]+%[0-9A-Za-z]}", commandBuffer, param1Buffer, param2Buffer) == 3) {
+     const WORD paramLength[3] = {
+       strnlen(commandBuffer, COMMAND_MAX_LENGTH),
+       strnlen(param1Buffer, PARAM_MAX_LENGTH),
+       strnlen(param2Buffer, PARAM_MAX_LENGTH)
+     };
+     size_t offset = 5 + paramLength[0] + paramLength[1] + paramLength[2];
+     if (keyString[offset - 1] == '}') {
+       const unsigned long hash[3] = {
+         crc32(commandBuffer, paramLength[0]),
+         crc32(param1Buffer, paramLength[1]),
+         crc32(param2Buffer, paramLength[2])
+       };
+
+       WORD keyCode[3];
+       for (unsigned char i = 0; i < 3; i++) {
+         keyCode[i] = ParseCommand(hash[i]);
+         if (!keyCode[i] && paramLength[i] == 1) {
+           SHORT vKeyCode = -1;
+           switch (i) {
+           case 0:
+             vKeyCode = VkKeyScan(commandBuffer[0]);
+             break;
+           case 1:
+             vKeyCode = VkKeyScan(param1Buffer[0]);
+             break;
+           case 2:
+             vKeyCode = VkKeyScan(param2Buffer[0]);
+             break;
+           }
+           if (vKeyCode != -1)
+             if (vKeyCode >> 8 == 0 || vKeyCode >> 8 == 1)
+               keyCode[i] = vKeyCode & 0xFF;
+         }
+         if (keyCode[0] && keyCode[1] && keyCode[2]) {
+           SendTripleKey(keyCode[0], keyCode[1], keyCode[2]);
+           return ParseKeyString(keyString + offset);
+         }
+       }
+     }
+   }
   }
+
   const SHORT vKeyCode = VkKeyScan(keyString[0]);
   const WORD keyCode = vKeyCode & 0xFF;
   const WORD keyCodeCombine = vKeyCode >> 8;
