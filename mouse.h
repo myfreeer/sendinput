@@ -3,6 +3,7 @@
 static void MouseClick(const unsigned int x, const unsigned int y, const unsigned char type) {
   SetCursorPos(x, y);
   INPUT input;
+  ZeroMemory(&input, sizeof(input));
   input.type = INPUT_MOUSE;
   switch (type) {
   case 1:

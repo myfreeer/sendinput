@@ -3,6 +3,7 @@
 static void SetKeyState(const BOOL bState, const WORD keyCode) {
   BYTE keyState[256];
   INPUT input;
+  ZeroMemory(&input, sizeof(input));
 
   GetKeyboardState((LPBYTE) &keyState);
   if ((bState && !(keyState[keyCode] & 1)) ||
@@ -18,6 +19,7 @@ static void SetKeyState(const BOOL bState, const WORD keyCode) {
 
 static void SendSingleKey(const WORD keyCode) {
   INPUT input;
+  ZeroMemory(&input, sizeof(input));
   input.type = INPUT_KEYBOARD;
   input.ki.wVk = keyCode;
   input.ki.dwFlags = 0;
@@ -30,6 +32,7 @@ static void SendSingleKey(const WORD keyCode) {
 //function SendDoubleKey: press keyCode1, press keyCode2, release keyCode1, release keyCode2
 static void SendDoubleKey(const WORD keyCode1, const WORD keyCode2) {
   INPUT input;
+  ZeroMemory(&input, sizeof(input));
   input.type = INPUT_KEYBOARD;
   input.ki.wVk = keyCode1;
   input.ki.dwFlags = 0;
