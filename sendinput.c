@@ -73,6 +73,37 @@ LPSTR ParseKeyString(const LPSTR keyString) {
           return ParseKeyString(keyString + offset);
       }
     }
+    if (sscanf(keyString, "${%[A-Z] %[0-9A-Za-z]}", commandBuffer, param1Buffer) == 2) {
+      size_t offset = 4 + strnlen(commandBuffer, COMMAND_MAX_LENGTH) + strnlen(param1Buffer, PARAM_MAX_LENGTH);
+      if (keyString[offset - 1] == '}') {
+        const WORD commandLength = strnlen(commandBuffer, COMMAND_MAX_LENGTH);
+        const WORD param1Length = strnlen(param1Buffer, PARAM_MAX_LENGTH);
+        const unsigned long hash1 = crc32(commandBuffer, commandLength);
+        const unsigned long hash2 = crc32(param1Buffer, param1Length);
+        WORD keyCode1 = ParseCommand(hash1);
+        WORD keyCode2 = ParseCommand(hash2);
+        if (keyCode1 && keyCode2) {
+          SendDoubleKey(keyCode1, keyCode2);
+          return ParseKeyString(keyString + offset);
+        } else {
+          if (keyCode1 && param1Length == 1) {
+            const SHORT vKeyCode = VkKeyScan(param1Buffer[0]);
+            keyCode2 = vKeyCode & 0xFF;
+            if (vKeyCode>>8 == 0 || vKeyCode>>8 == 1) {
+              SendDoubleKey(keyCode1, keyCode2);
+              return ParseKeyString(keyString + offset);
+            }
+          } else if (keyCode2 && commandLength == 1) {
+            const SHORT vKeyCode = VkKeyScan(commandBuffer[0]);
+            keyCode1 = vKeyCode & 0xFF;
+            if (vKeyCode>>8 == 0 || vKeyCode>>8 == 1) {
+              SendDoubleKey(keyCode1, keyCode2);
+              return ParseKeyString(keyString + offset);
+            }
+          }
+        }
+      }
+    }
     if (sscanf(keyString, "${%[A-Z] %[0-9] %[0-9]}", commandBuffer, param1Buffer, param2Buffer) == 3) {
       size_t offset = 5 + strnlen(commandBuffer, COMMAND_MAX_LENGTH) + strnlen(param1Buffer, PARAM_MAX_LENGTH) + strnlen(param2Buffer, PARAM_MAX_LENGTH);
       param1 = atoi(param1Buffer);
