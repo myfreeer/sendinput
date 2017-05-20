@@ -12,7 +12,7 @@ before_build:
 
     cd ..
 build:
-  project: Build\danmaku2ass_native.sln
+  project: Build\sendinput.sln
 after_build:
 - cmd: >-
     7z a -mx9 -r release.7z *.dll
