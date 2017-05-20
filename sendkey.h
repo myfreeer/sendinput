@@ -34,7 +34,7 @@ static void SendMultipleKey(const WORD keyCode[], const unsigned short count) {
   ZeroMemory(&input, sizeof(input));
   input.type = INPUT_KEYBOARD;
   input.ki.dwFlags = 0;
-  for (unsigned short i = 0; i<count;i++) {
+  for (unsigned short i = 0; i<count; i++) {
   	  input.ki.wVk = keyCode[i];
   	  SendInput(1, &input, sizeof(input));
   }

@@ -48,6 +48,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         BOOL commandMatched = FALSE;
         switch (crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH))) {
         case 4167499804L: //SLEEP
+        case 1266380369L: //WAIT
           Sleep(param1);
           commandMatched = TRUE;
           break;
@@ -153,10 +154,10 @@ LPSTR ParseKeyString(const LPSTR keyString) {
             if (vKeyCode >> 8 == 0 || vKeyCode >> 8 == 1)
               keyCode[i] = vKeyCode & 0xFF;
           }
-          if (keyCode[0] && keyCode[1] && keyCode[2]) {
-            SendMultipleKey(keyCode, 3);
-            return ParseKeyString(keyString + offset);
-          }
+        }
+        if (keyCode[0] && keyCode[1] && keyCode[2]) {
+          SendMultipleKey(keyCode, 3);
+          return ParseKeyString(keyString + offset);
         }
       }
     }
