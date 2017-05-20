@@ -20,6 +20,24 @@ static void EmitError(const unsigned short errorCode) {
   MessageBox(NULL, ErrorInfo[errorCode], NULL, MB_OK | MB_ICONEXCLAMATION | MB_SETFOREGROUND);
 }
 
+BOOL ParseKeyCombination(const char param[][COMMAND_MAX_LENGTH], const WORD paramLength[], const unsigned char paramCount) {
+  WORD keyCode[paramCount];
+  unsigned long hash[paramCount];
+  for (unsigned char i = 0; i < paramCount; i++) {
+    hash[i] = crc32(param[i], paramLength[i]);
+    keyCode[i] = ParseCommand(hash[i]);
+    if (!keyCode[i] && paramLength[i] == 1) {
+      SHORT vKeyCode = VkKeyScan(param[i][0]);
+      if (vKeyCode >> 8 == 0 || vKeyCode >> 8 == 1)
+        keyCode[i] = vKeyCode & 0xFF;
+    }
+    if (!keyCode[i])
+      return FALSE;
+  }
+  SendMultipleKey(keyCode, paramCount);
+  return TRUE;
+}
+
 LPSTR ParseKeyString(const LPSTR keyString) {
   if (lstrlen(keyString) < 1) return 0;
   if (keyString[0] == '$' && keyString[1] == '{') {
@@ -39,8 +57,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
           }
         }
       }
-    }
-    if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
+    } else if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
       const size_t offset = 4 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH);
       const int param1 = atoi(param[1]);
       if (keyString[offset - 1] == '}') {
@@ -69,42 +86,16 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         if (commandMatched)
           return ParseKeyString(keyString + offset);
       }
-    }
-    if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]}", param[0], param[1]) == 2) {
-      WORD length[2];
+    } else if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]}", param[0], param[1]) == 2) {
+      WORD paramLength[2];
       for (unsigned char i = 0; i < 2; i++)
-        length[i] = strnlen(param[i], COMMAND_MAX_LENGTH);
-      const size_t offset = 4 + length[0] + length[1];
+        paramLength[i] = strnlen(param[i], COMMAND_MAX_LENGTH);
+      const size_t offset = 4 + paramLength[0] + paramLength[1];
       if (keyString[offset - 1] == '}') {
-        unsigned long hash[2];
-        WORD keyCode[2];
-        for (unsigned char i = 0; i < 2; i++) {
-          hash[i] = crc32(param[i], length[i]);
-          keyCode[i] = ParseCommand(hash[i]);
-        }
-        if (keyCode[0] && keyCode[1]) {
-          SendMultipleKey(keyCode, 2);
+        if (ParseKeyCombination(param, paramLength, 2))
           return ParseKeyString(keyString + offset);
-        } else {
-          if (keyCode[0] && length[1] == 1) {
-            const SHORT vKeyCode = VkKeyScan(param[1][0]);
-            keyCode[1] = vKeyCode & 0xFF;
-            if (vKeyCode >> 8 == 0 || vKeyCode >> 8 == 1) {
-              SendMultipleKey(keyCode, 2);
-              return ParseKeyString(keyString + offset);
-            }
-          } else if (keyCode[1] && length[0] == 1) {
-            const SHORT vKeyCode = VkKeyScan(param[0][0]);
-            keyCode[0] = vKeyCode & 0xFF;
-            if (vKeyCode >> 8 == 0 || vKeyCode >> 8 == 1) {
-              SendMultipleKey(keyCode, 2);
-              return ParseKeyString(keyString + offset);
-            }
-          }
-        }
       }
-    }
-    if (sscanf(keyString, "${%15[A-Z] %10[0-9] %10[0-9]}", param[0], param[1], param[2]) == 3) {
+    } else if (sscanf(keyString, "${%15[A-Z] %10[0-9] %10[0-9]}", param[0], param[1], param[2]) == 3) {
       const size_t offset = 5 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH) + strnlen(param[2], COMMAND_MAX_LENGTH);
       const int param1 = atoi(param[1]);
       const int param2 = atoi(param[2]);
@@ -135,29 +126,15 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         if (commandMatched)
           return ParseKeyString(keyString + offset);
       }
-    }
-    if (sscanf(keyString, "${%15[A-Z]+%15[A-Z]+%15[0-9A-Za-z]}", param[0], param[1], param[2]) == 3) {
+    } else if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]+%15[0-9A-Za-z]}", param[0], param[1], param[2]) == 3) {
       WORD paramLength[3];
-      unsigned long hash[3];
       for (unsigned char i = 0; i < 3; i++) {
         paramLength[i] = strnlen(param[i], COMMAND_MAX_LENGTH);
-        hash[i] = crc32(param[i], paramLength[i]);
       };
       const size_t offset = 5 + paramLength[0] + paramLength[1] + paramLength[2];
       if (keyString[offset - 1] == '}') {
-        WORD keyCode[3];
-        for (unsigned char i = 0; i < 3; i++) {
-          keyCode[i] = ParseCommand(hash[i]);
-          if (!keyCode[i] && paramLength[i] == 1) {
-            SHORT vKeyCode = VkKeyScan(param[i][0]);
-            if (vKeyCode >> 8 == 0 || vKeyCode >> 8 == 1)
-              keyCode[i] = vKeyCode & 0xFF;
-          }
-        }
-        if (keyCode[0] && keyCode[1] && keyCode[2]) {
-          SendMultipleKey(keyCode, 3);
+        if (ParseKeyCombination(param, paramLength, 3))
           return ParseKeyString(keyString + offset);
-        }
       }
     }
   }
