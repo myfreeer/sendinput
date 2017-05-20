@@ -57,7 +57,8 @@ LPSTR ParseKeyString(const LPSTR keyString) {
           }
         }
       }
-    } else if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
+    }
+    if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
       const size_t offset = 4 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH);
       const int param1 = atoi(param[1]);
       if (keyString[offset - 1] == '}') {
@@ -86,7 +87,8 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         if (commandMatched)
           return ParseKeyString(keyString + offset);
       }
-    } else if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]}", param[0], param[1]) == 2) {
+    }
+    if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]}", param[0], param[1]) == 2) {
       WORD paramLength[2];
       for (unsigned char i = 0; i < 2; i++)
         paramLength[i] = strnlen(param[i], COMMAND_MAX_LENGTH);
@@ -95,7 +97,8 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         if (ParseKeyCombination(param, paramLength, 2))
           return ParseKeyString(keyString + offset);
       }
-    } else if (sscanf(keyString, "${%15[A-Z] %10[0-9] %10[0-9]}", param[0], param[1], param[2]) == 3) {
+    }
+    if (sscanf(keyString, "${%15[A-Z] %10[0-9] %10[0-9]}", param[0], param[1], param[2]) == 3) {
       const size_t offset = 5 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH) + strnlen(param[2], COMMAND_MAX_LENGTH);
       const int param1 = atoi(param[1]);
       const int param2 = atoi(param[2]);
@@ -126,7 +129,8 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         if (commandMatched)
           return ParseKeyString(keyString + offset);
       }
-    } else if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]+%15[0-9A-Za-z]}", param[0], param[1], param[2]) == 3) {
+    }
+    if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]+%15[0-9A-Za-z]}", param[0], param[1], param[2]) == 3) {
       WORD paramLength[3];
       for (unsigned char i = 0; i < 3; i++) {
         paramLength[i] = strnlen(param[i], COMMAND_MAX_LENGTH);
