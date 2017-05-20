@@ -60,31 +60,10 @@ LPSTR ParseKeyString(const LPSTR keyString) {
     }
     if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
       const size_t offset = 4 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH);
-      const int param1 = atoi(param[1]);
       if (keyString[offset - 1] == '}') {
-        BOOL commandMatched = FALSE;
-        switch (crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH))) {
-        case 4167499804L: //SLEEP
-        case 1266380369L: //WAIT
-          Sleep(param1);
-          commandMatched = TRUE;
-          break;
-        case 2439287330L: //CAPS
-        case 3274666208L: //CAPSLOCK
-          SetKeyState((BOOL) param1, VK_CAPITAL);
-          commandMatched = TRUE;
-          break;
-        case 1256517092L: //NUM
-        case 3844504896L: //NUMLOCK
-          SetKeyState((BOOL) param1, VK_NUMLOCK);
-          commandMatched = TRUE;
-          break;
-        case 2251377965L: //SCROLLLOCK
-          SetKeyState((BOOL) param1, VK_SCROLL);
-          commandMatched = TRUE;
-          break;
-        }
-        if (commandMatched)
+        int paramInt[2];
+        paramInt[0] = atoi(param[1]);
+        if (ParseCommandWithParams(crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH)), paramInt, 1))
           return ParseKeyString(keyString + offset);
       }
     }
@@ -100,36 +79,14 @@ LPSTR ParseKeyString(const LPSTR keyString) {
     }
     if (sscanf(keyString, "${%15[A-Z] %10[0-9] %10[0-9]}", param[0], param[1], param[2]) == 3) {
       const size_t offset = 5 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH) + strnlen(param[2], COMMAND_MAX_LENGTH);
-      const int param1 = atoi(param[1]);
-      const int param2 = atoi(param[2]);
       if (keyString[offset - 1] == '}') {
-        BOOL commandMatched = FALSE;
-        switch (crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH))) {
-        case 1302462608L: //CLICK
-        case 1121492025L: //LCLICK
-        case 2224477467L: //LEFTCLICK
-          MouseClick(param1, param2, 0);
-          commandMatched = TRUE;
-          break;
-        case 2063925202L: //RCLICK
-        case 1685702361L: //RIGHTCLICK
-          MouseClick(param1, param2, 1);
-          commandMatched = TRUE;
-          break;
-        case 2307149724L: //MCLICK
-        case 1843602477L: //MIDDLECLICK
-          MouseClick(param1, param2, 2);
-          commandMatched = TRUE;
-          break;
-        case 2858569247L: //MOUSEMOVE
-          SetCursorPos(param1, param2);
-          commandMatched = TRUE;
-          break;
-        }
-        if (commandMatched)
+        int paramInt[2];
+        paramInt[0] = atoi(param[1]);
+        paramInt[1] = atoi(param[2]);
+        if (ParseCommandWithParams(crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH)), paramInt, 2))
           return ParseKeyString(keyString + offset);
+        }
       }
-    }
     if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]+%15[0-9A-Za-z]}", param[0], param[1], param[2]) == 3) {
       WORD paramLength[3];
       for (unsigned char i = 0; i < 3; i++) {

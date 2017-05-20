@@ -243,3 +243,45 @@ static WORD ParseCommand(const unsigned long hash) {
   }
   return FALSE;
 }
+
+static BOOL ParseCommandWithParams(const unsigned long hash, const int params[], const unsigned char paramCount) {
+  if (paramCount == 1) {
+    switch (hash) {
+    case 4167499804L: //SLEEP
+    case 1266380369L: //WAIT
+      Sleep(params[0]);
+      return TRUE;
+    case 2439287330L: //CAPS
+    case 3274666208L: //CAPSLOCK
+      SetKeyState((BOOL) params[0], VK_CAPITAL);
+      return TRUE;
+    case 1256517092L: //NUM
+    case 3844504896L: //NUMLOCK
+      SetKeyState((BOOL) params[0], VK_NUMLOCK);
+      return TRUE;
+    case 2251377965L: //SCROLLLOCK
+      SetKeyState((BOOL) params[0], VK_SCROLL);
+      return TRUE;
+    }
+  } else if (paramCount == 2) {
+    switch (hash) {
+    case 1302462608L: //CLICK
+    case 1121492025L: //LCLICK
+    case 2224477467L: //LEFTCLICK
+      MouseClick(params[0], params[1], 0);
+      return TRUE;
+    case 2063925202L: //RCLICK
+    case 1685702361L: //RIGHTCLICK
+      MouseClick(params[0], params[1], 1);
+      return TRUE;
+    case 2307149724L: //MCLICK
+    case 1843602477L: //MIDDLECLICK
+      MouseClick(params[0], params[1], 2);
+      return TRUE;
+    case 2858569247L: //MOUSEMOVE
+      SetCursorPos(params[0], params[1]);
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
