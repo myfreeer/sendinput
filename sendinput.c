@@ -61,9 +61,8 @@ LPSTR ParseKeyString(const LPSTR keyString) {
     if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
       const size_t offset = 4 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH);
       if (keyString[offset - 1] == '}') {
-        int paramInt[2];
-        paramInt[0] = atoi(param[1]);
-        if (ParseCommandWithParams(crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH)), paramInt, 1))
+        const int paramInt = atoi(param[1]);
+        if (ParseCommandWithParams(crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH)), &paramInt, 1))
           return ParseKeyString(keyString + offset);
       }
     }
