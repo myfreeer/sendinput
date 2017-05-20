@@ -3,6 +3,8 @@ build_script:
 - cmd: >-
     mkdir Build
 
+    set MSYSTEM=MINGW64
+
     C:\msys64\usr\bin\bash -lc "cd \"$APPVEYOR_BUILD_FOLDER\\Build\" && exec cmake .. -G \"MSYS Makefiles\" -DCMAKE_C_FLAGS=-s -Wdev -Wdeprecated"
 
     C:\msys64\usr\bin\bash -lc "cd \"$APPVEYOR_BUILD_FOLDER\\Build\" && exec make"
