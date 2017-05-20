@@ -24,7 +24,6 @@ LPSTR ParseKeyString(const LPSTR keyString) {
   if (lstrlen(keyString) < 1) return 0;
   if (keyString[0] == '$' && keyString[1] == '{') {
     char param[3][COMMAND_MAX_LENGTH];
-    int param1, param2;
     if (sscanf(keyString, "${%15[A-Z0-9]}", param[0]) == 1) {
       const size_t offset = 3 + strnlen(param[0], COMMAND_MAX_LENGTH);
       if (keyString[offset - 1] == '}') {
@@ -43,7 +42,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
     }
     if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
       const size_t offset = 4 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH);
-      param1 = atoi(param[1]);
+      const int param1 = atoi(param[1]);
       if (keyString[offset - 1] == '}') {
         BOOL commandMatched = FALSE;
         switch (crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH))) {
@@ -107,8 +106,8 @@ LPSTR ParseKeyString(const LPSTR keyString) {
     }
     if (sscanf(keyString, "${%15[A-Z] %10[0-9] %10[0-9]}", param[0], param[1], param[2]) == 3) {
       const size_t offset = 5 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH) + strnlen(param[2], COMMAND_MAX_LENGTH);
-      param1 = atoi(param[1]);
-      param2 = atoi(param[2]);
+      const int param1 = atoi(param[1]);
+      const int param2 = atoi(param[2]);
       if (keyString[offset - 1] == '}') {
         BOOL commandMatched = FALSE;
         switch (crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH))) {

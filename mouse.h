@@ -15,6 +15,7 @@ static void MouseClick(const unsigned int x, const unsigned int y, const unsigne
     input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
     SendInput(1, &input, sizeof(input));
     input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+    break;
   default:
     input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
     SendInput(1, &input, sizeof(input));
