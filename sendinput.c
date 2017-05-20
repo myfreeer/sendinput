@@ -13,7 +13,7 @@ static const LPSTR ErrorInfo[] = {
   "no error"
   ,"keyCodeCombine == -1, VkKeyScan fails"
   ,"unknown high-order byte of VkKeyScan's return value"
-  ,"cannot get keyCode2"
+  ,"cannot get high-order byte from VkKeyScan"
 };
 
 static void EmitError(const unsigned short errorCode) {
@@ -37,6 +37,12 @@ BOOL ParseKeyCombination(const char param[][COMMAND_MAX_LENGTH], const WORD para
   SendMultipleKey(keyCode, paramCount);
   return TRUE;
 }
+
+static const unsigned char vkeyCodeCombine[3] = {
+	VK_SHIFT, //shift
+	VK_CONTROL, //ctrl
+	VK_MENU //alt
+};
 
 LPSTR ParseKeyString(const LPSTR keyString) {
   if (lstrlen(keyString) < 1) return 0;
@@ -100,40 +106,30 @@ LPSTR ParseKeyString(const LPSTR keyString) {
   }
 
   const SHORT vKeyCode = VkKeyScan(keyString[0]);
-  WORD keyCode[2];
-  keyCode[1] = vKeyCode & 0xFF;
+  WORD keyCode[3];
+  keyCode[0] = vKeyCode & 0xFF;
   const WORD keyCodeCombine = vKeyCode >> 8;
-  if (keyCodeCombine == -1 || keyCode[1] == -1) {
+  if (vKeyCode == -1) {
     EmitError(1); //VkKeyScan fails
     return ParseKeyString(keyString + 1);
   }
   if (keyCodeCombine == 0) {
-    SendSingleKey(keyCode[1]);
+    SendSingleKey(keyCode[0]);
     return ParseKeyString(keyString + 1);
   }
-  BOOL keyCode2Initialized = FALSE;
-  switch (keyCodeCombine) {
-  case 1:
-    keyCode[0] = VK_SHIFT; //shift
-    keyCode2Initialized = TRUE;
-    break;
-  case 2:
-    keyCode[0] = VK_CONTROL; //ctrl
-    keyCode2Initialized = TRUE;
-    break;
-  case 4:
-    keyCode[0] = VK_MENU; //alt
-    keyCode2Initialized = TRUE;
-    break;
-  default:
-    EmitError(2); //unknown high-order byte of VkKeyScan's return value
-    SendSingleKey(keyCode[1]); //just send keycode
-    return ParseKeyString(keyString + 1);
+  unsigned char keyCount = 0;
+  for (unsigned char i = 0; i < 3; i++) {
+    if (((keyCodeCombine >> i) & 0x1) == 1) {
+      keyCount++;
+      keyCode[i + 1] = keyCode[i];
+      keyCode[i] = vkeyCodeCombine[i];
+    }
   }
-  if (keyCode2Initialized)
-    SendMultipleKey(keyCode, 2);
+  if (keyCount > 0)
+    SendMultipleKey(keyCode, keyCount + 1);
   else {
-    EmitError(3); //cannot get keyCode[0]
+    if (keyCodeCombine > 4) EmitError(2); //unknown high-order byte of VkKeyScan's return value
+    else EmitError(3); //cannot get high-order byte from VkKeyScan
     SendSingleKey(keyCode[1]);
   }
   return ParseKeyString(keyString + 1);
