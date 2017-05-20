@@ -58,7 +58,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         }
       }
     }
-    if (sscanf(keyString, "${%15[A-Z] %10[0-9]}", param[0], param[1]) == 2) {
+    if (sscanf(keyString, "${%15[A-Z] %9[0-9]}", param[0], param[1]) == 2) {
       const size_t offset = 4 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH);
       if (keyString[offset - 1] == '}') {
         const int paramInt = atoi(param[1]);
@@ -76,7 +76,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
           return ParseKeyString(keyString + offset);
       }
     }
-    if (sscanf(keyString, "${%15[A-Z] %10[0-9] %10[0-9]}", param[0], param[1], param[2]) == 3) {
+    if (sscanf(keyString, "${%15[A-Z] %9[0-9] %9[0-9]}", param[0], param[1], param[2]) == 3) {
       const size_t offset = 5 + strnlen(param[0], COMMAND_MAX_LENGTH) + strnlen(param[1], COMMAND_MAX_LENGTH) + strnlen(param[2], COMMAND_MAX_LENGTH);
       if (keyString[offset - 1] == '}') {
         int paramInt[2];
