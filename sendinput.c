@@ -120,9 +120,9 @@ LPSTR ParseKeyString(const LPSTR keyString) {
   unsigned char keyCount = 0;
   for (unsigned char i = 0; i < 3; i++) {
     if (((keyCodeCombine >> i) & 0x1) == 1) {
+      keyCode[keyCount + 1] = keyCode[keyCount];
+      keyCode[keyCount] = vkeyCodeCombine[keyCount];
       keyCount++;
-      keyCode[i + 1] = keyCode[i];
-      keyCode[i] = vkeyCodeCombine[i];
     }
   }
   if (keyCount > 0)
@@ -130,7 +130,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
   else {
     if (keyCodeCombine > 4) EmitError(2); //unknown high-order byte of VkKeyScan's return value
     else EmitError(3); //cannot get high-order byte from VkKeyScan
-    SendSingleKey(keyCode[1]);
+    SendSingleKey(keyCode[0]);
   }
   return ParseKeyString(keyString + 1);
 }
