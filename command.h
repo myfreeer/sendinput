@@ -1,3 +1,7 @@
+#include <windows.h>
+#include "mouse.h"
+#include "sendkey.h"
+
 static WORD ParseCommand(const unsigned long hash) {
   switch (hash) {
   case 4213349504L: //BACKSPACE

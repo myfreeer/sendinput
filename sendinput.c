@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "crc32.h"
-#include "mouse.h"
-#include "sendkey.h"
 #include "command.h"
 
 #define COMMAND_MAX_LENGTH 16
@@ -44,8 +42,10 @@ static const unsigned char vkeyCodeCombine[3] = {
 	VK_MENU //alt
 };
 
-LPSTR ParseKeyString(const LPSTR keyString) {
-  if (lstrlen(keyString) < 1) return 0;
+LPSTR ParseKeyString(const LPSTR keyString, const unsigned int length) {
+  if (length < 1) return NULL;
+  if ((length & 0x2ff) == 0) Sleep(1); //workaround: preverting mistype by waiting for a while
+  if (length > 4)
   if (keyString[0] == '$' && keyString[1] == '{') {
     char param[3][COMMAND_MAX_LENGTH];
     if (sscanf(keyString, "${%15[A-Z0-9]}", param[0]) == 1) {
@@ -53,13 +53,13 @@ LPSTR ParseKeyString(const LPSTR keyString) {
       if (keyString[offset - 1] == '}') {
         const unsigned long hash = crc32(param[0], offset - 3);
         if (hash == 1005452284L) { //DOLLAR
-          ParseKeyString("$");
-          return ParseKeyString(keyString + offset);
+          ParseKeyString("$", 1);
+          return ParseKeyString(keyString + offset, length - offset);
         } else {
           const WORD keyCode = ParseCommand(hash);
           if (keyCode) {
             SendSingleKey(keyCode);
-            return ParseKeyString(keyString + offset);
+            return ParseKeyString(keyString + offset, length - offset);
           }
         }
       }
@@ -69,7 +69,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
       if (keyString[offset - 1] == '}') {
         const int paramInt = atoi(param[1]);
         if (ParseCommandWithParams(crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH)), &paramInt, 1))
-          return ParseKeyString(keyString + offset);
+          return ParseKeyString(keyString + offset, length - offset);
       }
     }
     if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]}", param[0], param[1]) == 2) {
@@ -79,7 +79,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
       const size_t offset = 4 + paramLength[0] + paramLength[1];
       if (keyString[offset - 1] == '}') {
         if (ParseKeyCombination(param, paramLength, 2))
-          return ParseKeyString(keyString + offset);
+          return ParseKeyString(keyString + offset, length - offset);
       }
     }
     if (sscanf(keyString, "${%15[A-Z] %9[0-9] %9[0-9]}", param[0], param[1], param[2]) == 3) {
@@ -89,7 +89,7 @@ LPSTR ParseKeyString(const LPSTR keyString) {
         paramInt[0] = atoi(param[1]);
         paramInt[1] = atoi(param[2]);
         if (ParseCommandWithParams(crc32(param[0], strnlen(param[0], COMMAND_MAX_LENGTH)), paramInt, 2))
-          return ParseKeyString(keyString + offset);
+          return ParseKeyString(keyString + offset, length - offset);
         }
       }
     if (sscanf(keyString, "${%15[A-Z]+%15[0-9A-Za-z]+%15[0-9A-Za-z]}", param[0], param[1], param[2]) == 3) {
@@ -100,22 +100,24 @@ LPSTR ParseKeyString(const LPSTR keyString) {
       const size_t offset = 5 + paramLength[0] + paramLength[1] + paramLength[2];
       if (keyString[offset - 1] == '}') {
         if (ParseKeyCombination(param, paramLength, 3))
-          return ParseKeyString(keyString + offset);
+          return ParseKeyString(keyString + offset, length - offset);
       }
     }
   }
 
+  //const SHORT vKeyCode = VkKeyScanEx(keyString[0],GetKeyboardLayout(0));
   const SHORT vKeyCode = VkKeyScan(keyString[0]);
   WORD keyCode[3];
+  ZeroMemory(keyCode, 3);
   keyCode[0] = vKeyCode & 0xFF;
   const WORD keyCodeCombine = vKeyCode >> 8;
   if (vKeyCode == -1) {
     EmitError(1); //VkKeyScan fails
-    return ParseKeyString(keyString + 1);
+    return ParseKeyString(keyString + 1, length - 1);
   }
   if (keyCodeCombine == 0) {
     SendSingleKey(keyCode[0]);
-    return ParseKeyString(keyString + 1);
+    return ParseKeyString(keyString + 1, length - 1);
   }
   unsigned char keyCount = 0;
   for (unsigned char i = 0; i < 3; i++) {
@@ -132,15 +134,18 @@ LPSTR ParseKeyString(const LPSTR keyString) {
     else EmitError(3); //cannot get high-order byte from VkKeyScan
     SendSingleKey(keyCode[0]);
   }
-  return ParseKeyString(keyString + 1);
+  return ParseKeyString(keyString + 1, length - 1);
 }
 
 //main entry
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-  const int cmdLineLength = lstrlen(lpCmdLine);
+  unsigned int cmdLineLength = lstrlen(lpCmdLine);
   if (cmdLineLength == 0) {
     return 1;
   }
-  ParseKeyString(lpCmdLine);
+  if (cmdLineLength > 8000) {
+    cmdLineLength = 8000;
+  }
+  ParseKeyString(lpCmdLine, cmdLineLength);
   return 0;
 }
