@@ -5,9 +5,9 @@ static void SetKeyState(const BOOL bState, const WORD keyCode) {
   INPUT input;
   ZeroMemory(&input, sizeof(input));
 
-  GetKeyboardState((LPBYTE) &keyState);
+  GetKeyboardState((LPBYTE)&keyState);
   if ((bState && !(keyState[keyCode] & 1)) ||
-    (!bState && (keyState[keyCode] & 1))) {
+      (!bState && (keyState[keyCode] & 1))) {
     input.type = INPUT_KEYBOARD;
     input.ki.wVk = keyCode;
     SendInput(1, &input, sizeof(input));
@@ -34,13 +34,13 @@ static void SendMultipleKey(const WORD keyCode[], const unsigned short count) {
   ZeroMemory(&input, sizeof(input));
   input.type = INPUT_KEYBOARD;
   input.ki.dwFlags = 0;
-  for (unsigned short i = 0; i<count; i++) {
-  	  input.ki.wVk = keyCode[i];
-  	  SendInput(1, &input, sizeof(input));
+  for (unsigned short i = 0; i < count; i++) {
+    input.ki.wVk = keyCode[i];
+    SendInput(1, &input, sizeof(input));
   }
   input.ki.dwFlags = KEYEVENTF_KEYUP;
-  for (unsigned short i = count; i-->0;) {
-  	  input.ki.wVk = keyCode[i];
-  	  SendInput(1, &input, sizeof(input));
+  for (unsigned short i = count; i-- > 0;) {
+    input.ki.wVk = keyCode[i];
+    SendInput(1, &input, sizeof(input));
   }
 }
