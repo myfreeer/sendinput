@@ -162,8 +162,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   if (cmdLineLength == 0) {
     return 1;
   }
-  if (cmdLineLength > 8000) {
-    cmdLineLength = 8000;
+  LPTSTR fullCommandLine = GetCommandLine();
+  unsigned int maxCmdLineLength = 8191 - lstrlen(fullCommandLine) + cmdLineLength;
+  if (cmdLineLength > maxCmdLineLength) {
+    cmdLineLength = maxCmdLineLength;
   }
   ParseKeyString(lpCmdLine, cmdLineLength);
   return 0;
