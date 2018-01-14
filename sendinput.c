@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "crc32.h"
 #include "command.h"
 
@@ -23,7 +24,7 @@ BOOL ParseKeyCombination(const char param[][COMMAND_MAX_LENGTH],
                          const WORD paramLength[],
                          const unsigned char paramCount) {
   WORD keyCode[paramCount];
-  unsigned long hash[paramCount];
+  uint32_t hash[paramCount];
   for (unsigned char i = 0; i < paramCount; i++) {
     hash[i] = crc32(param[i], paramLength[i]);
     keyCode[i] = ParseCommand(hash[i]);
@@ -56,8 +57,8 @@ LPSTR ParseKeyString(const LPSTR keyString, const unsigned int length) {
       if (sscanf(keyString, "${%15[A-Z0-9]}", param[0]) == 1) {
         const size_t offset = 3 + strnlen(param[0], COMMAND_MAX_LENGTH);
         if (keyString[offset - 1] == '}') {
-          const unsigned long hash = crc32(param[0], offset - 3);
-          if (hash == 1005452284L) { // DOLLAR
+          const uint32_t hash = crc32(param[0], offset - 3);
+          if (hash == 1005452284) { // DOLLAR
             ParseKeyString("$", 1);
             return ParseKeyString(keyString + offset, length - offset);
           } else {
