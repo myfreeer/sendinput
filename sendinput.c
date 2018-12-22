@@ -1,5 +1,7 @@
 #include "sendinput.h"
-
+#ifdef NO_START_FILES
+#include "winmain.h"
+#endif
 #ifndef __GNUC__
 #define UNUSED
 #else // __GNUC__

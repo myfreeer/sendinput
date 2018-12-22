@@ -1,12 +1,22 @@
-cmake_minimum_required(VERSION 2.6)
-project(sendinput)
+cmake_minimum_required(VERSION 3.12)
+project(sendinput C)
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release." FORCE)
+endif (NOT CMAKE_BUILD_TYPE)
+set(CMAKE_C_STANDARD 11)
+set(HEADERS crc32.h mouse.h sendkey.h sendinput.h)
+add_executable(sendinput sendinput.c  winmain.h ${HEADERS})
 
-set(SOURCE_FILES
-    sendinput.c
-    command.h
-    mouse.h
-    sendkey.h
-    crc32.h
-	)
-
-add_executable(sendinput ${SOURCE_FILES})
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_C_FLAGS "-pipe -Wall -Wextra -fmerge-all-constants -Wl,--gc-sections,--build-id=none")
+    set(CMAKE_C_FLAGS_DEBUG "-g -Og")
+    set(CMAKE_C_FLAGS_RELEASE "-s -Os")
+    if (WIN32)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles -DNO_START_FILES")
+        set_target_properties(sendinput PROPERTIES
+                COMPILE_FLAGS "${CMAKE_C_FLAGS} -mwindows"
+                LINK_FLAGS "${CMAKE_C_FLAGS} -mwindows")
+        target_link_libraries(sendinput shlwapi)
+    endif ()
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_C_FLAGS}")
+endif ()

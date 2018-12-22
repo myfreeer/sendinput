@@ -32,3 +32,6 @@ cmake -GNinja ..
 # Building with ninja
 ninja
 ```
+
+## Credits
+* <https://github.com/myfreeer/win-startup-headers>
