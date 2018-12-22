@@ -5,6 +5,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif (NOT CMAKE_BUILD_TYPE)
 set(CMAKE_C_STANDARD 11)
 set(HEADERS crc32.h mouse.h sendkey.h sendinput.h)
+add_executable(sendinput_io sendinput_io.c main.h commandlinetoargva.h ${HEADERS})
 add_executable(sendinput sendinput.c  winmain.h ${HEADERS})
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
