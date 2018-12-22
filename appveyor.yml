@@ -1,17 +1,28 @@
-version: 1.0.{build}
+version: 1.0-{build}
 build_script:
 - cmd: >-
-    mkdir Build
-
-    set MSYSTEM=MINGW64
-
-    C:\msys64\usr\bin\bash -lc "cd \"$APPVEYOR_BUILD_FOLDER\\Build\" && exec cmake .. -G \"MSYS Makefiles\" -DCMAKE_C_FLAGS=-s -Wdev -Wdeprecated"
-
-    C:\msys64\usr\bin\bash -lc "cd \"$APPVEYOR_BUILD_FOLDER\\Build\" && exec make"
+    appveyor_build.bat
+on_failure:
+- 7z a -mx9 -r fail.7z *.exe *.sln *.txt *.log
+- appveyor.exe PushArtifact fail.7z
+shallow_clone: true
 test: off
+artifacts:
+- path: sendinput_x64.exe
+- path: sendinput_x86.exe
+- path: sendinput_io_x64.exe
+- path: sendinput_io_x86.exe
+- path: sendinput.7z
+cache:
+  - tests
 skip_commits:
   files:
     - 'LICENSE'
     - '*.md'
     - '.gitingore'
     - '.gitattributes'
+deploy:
+- provider: Environment
+  name: github
+  on:
+    appveyor_repo_tag: true
