@@ -11,6 +11,7 @@ See [Wiki/Usage](https://github.com/myfreeer/sendinput/wiki/Usage)
 ## Building
 ### Prerequisites
 * msys2 mingw64
+* git
 * mingw-w64-x86_64-gcc
 * mingw-w64-x86_64-cmake
 * mingw-w64-x86_64-ninja

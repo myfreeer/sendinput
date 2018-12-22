@@ -67,10 +67,9 @@ static const uint32_t crc32tab[256] = {
  0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-uint32_t crc32(const char * buf, uint32_t size) {
-  uint32_t i, crc;
-  crc = 0xFFFFFFFF;
-  for (i = 0; i < size; i++)
+uint32_t crc32(const char * buf, size_t size) {
+  uint32_t crc = 0xFFFFFFFF;
+  for (size_t i = 0; i < size; i++)
     crc = crc32tab[(crc ^ buf[i]) & 0xff] ^ (crc >> 8);
   return crc ^ 0xFFFFFFFF;
 }
