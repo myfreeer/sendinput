@@ -36,12 +36,12 @@ void ParseSendKeys(const char *keyString, size_t length) {
       // skip cr-lf line endings
       ++index;
     }
-    if (length > 4 && keyString[index] == '$' && keyString[index + 1] == '{') {
-      char param[3][COMMAND_MAX_LENGTH];
-      if (sscanf(keyString + index, "${%15[A-Z0-9]}", param[index]) == 1) {
-        const size_t offset = 3 + strnlen(param[index], COMMAND_MAX_LENGTH);
+    if (length - index > 4 && keyString[index] == '$' && keyString[index + 1] == '{') {
+      char param[3][COMMAND_MAX_LENGTH] = {{0}};
+      if (sscanf(keyString + index, "${%15[A-Z0-9]}", param[0]) == 1) {
+        const size_t offset = 3 + strnlen(param[0], COMMAND_MAX_LENGTH);
         if (keyString[index + offset - 1] == '}') {
-          const uint32_t hash = crc32(param[index], offset - 3);
+          const uint32_t hash = crc32(param[0], offset - 3);
           if (hash == 1005452284) { // DOLLAR
             ParseSendKeys("$", 1);
             index += offset;
